@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuthStore } from '@/store/auth.store';
 import { authApi } from '@/api/auth.api';
 import { useNavigate, Link } from 'react-router-dom';
@@ -14,7 +14,15 @@ export const Register = () => {
     const [error, setError] = useState('');
 
     const setAuth = useAuthStore((state) => state.setAuth);
+    const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
     const navigate = useNavigate();
+
+    // Redirect if already authenticated
+    useEffect(() => {
+        if (isAuthenticated) {
+            navigate('/dashboard', { replace: true });
+        }
+    }, [isAuthenticated, navigate]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();

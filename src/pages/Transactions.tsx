@@ -1,17 +1,31 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useTransactions, useCreateTransaction, useUpdateTransaction, useDeleteTransaction } from '@/hooks/useTransactions';
+import { useBudgets } from '@/hooks/useBudgets';
 import { TransactionTable } from '@/features/transactions/TransactionTable';
 import { TransactionForm } from '@/features/transactions/TransactionForm';
 import { Button } from '@/components/ui/Button';
 import { Modal } from '@/components/ui/Modal';
 import { Plus } from 'lucide-react';
 import { CreateTransactionDto, Transaction } from '@/types/transaction.types';
-import { Input } from '@/components/ui/Input';
 
 export const Transactions = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingTransaction, setEditingTransaction] = useState<Transaction | undefined>(undefined);
-    const [filters, setFilters] = useState({ category: '', startDate: '', endDate: '' });
+    const [filters, setFilters] = useState({
+        category: '',
+        startDate: '',
+        endDate: '',
+        page: 1,
+        limit: 10
+    });
+
+    const { data: budgets } = useBudgets();
+    const allCategories = useMemo(() => {
+        if (!budgets) return [];
+        const categories = budgets.flatMap(b => b.categories);
+        const uniqueNames = Array.from(new Set(categories.map(c => c.name)));
+        return uniqueNames.sort();
+    }, [budgets]);
 
     const { data: transactionsData, isLoading } = useTransactions(filters);
     const createMutation = useCreateTransaction();
@@ -47,6 +61,10 @@ export const Transactions = () => {
         setIsModalOpen(true);
     };
 
+    const handlePageChange = (newPage: number) => {
+        setFilters(prev => ({ ...prev, page: newPage }));
+    };
+
     return (
         <div className="space-y-6">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -58,13 +76,28 @@ export const Transactions = () => {
                 </Button>
             </div>
 
-            <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200 grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <Input
-                    placeholder="Filter by Category"
+            <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200 flex flex-wrap gap-4">
+                <select
+                    className="block w-full sm:w-auto rounded-md shadow-sm border-gray-300 focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 bg-white border h-10 min-w-[200px]"
                     value={filters.category}
-                    onChange={(e) => setFilters(prev => ({ ...prev, category: e.target.value }))}
-                />
-                {/* Date filters could go here */}
+                    onChange={(e) => setFilters(prev => ({ ...prev, category: e.target.value, page: 1 }))}
+                >
+                    <option value="">All Categories</option>
+                    {allCategories.map(cat => (
+                        <option key={cat} value={cat}>{cat}</option>
+                    ))}
+                </select>
+
+                <select
+                    className="block w-full sm:w-auto rounded-md shadow-sm border-gray-300 focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 bg-white border h-10"
+                    value={filters.limit}
+                    onChange={(e) => setFilters(prev => ({ ...prev, limit: Number(e.target.value), page: 1 }))}
+                >
+                    <option value={2}>2 per page</option>
+                    <option value={5}>5 per page</option>
+                    <option value={10}>10 per page</option>
+                    <option value={20}>20 per page</option>
+                </select>
             </div>
 
             <TransactionTable
@@ -73,6 +106,28 @@ export const Transactions = () => {
                 onEdit={openEditModal}
                 onDelete={handleDelete}
             />
+
+            {transactionsData && transactionsData.totalPages > 1 && (
+                <div className="flex justify-center items-center gap-4 mt-4">
+                    <Button
+                        variant="secondary"
+                        disabled={filters.page === 1}
+                        onClick={() => handlePageChange(filters.page - 1)}
+                    >
+                        Previous
+                    </Button>
+                    <span className="text-sm text-gray-600">
+                        Page {transactionsData.currentPage} of {transactionsData.totalPages}
+                    </span>
+                    <Button
+                        variant="secondary"
+                        disabled={filters.page === transactionsData.totalPages}
+                        onClick={() => handlePageChange(filters.page + 1)}
+                    >
+                        Next
+                    </Button>
+                </div>
+            )}
 
             <Modal
                 isOpen={isModalOpen}

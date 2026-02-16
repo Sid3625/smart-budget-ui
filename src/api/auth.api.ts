@@ -35,4 +35,9 @@ export const authApi = {
         const { data } = await api.post('/auth/logout');
         return data;
     },
+
+    updateProfile: async (data: Partial<User>): Promise<User> => {
+        const response = await api.patch<User>('/users/me', data);
+        return response.data;
+    },
 };

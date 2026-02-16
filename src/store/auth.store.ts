@@ -21,6 +21,13 @@ export const useAuthStore = create<AuthState>()(
                 set({ user, token, isAuthenticated: true });
             },
 
+            updateUser: (updatedUser: Partial<User>) => {
+                const currentUser = get().user;
+                if (currentUser) {
+                    set({ user: { ...currentUser, ...updatedUser } });
+                }
+            },
+
             logout: async () => {
                 try {
                     // Call backend logout endpoint

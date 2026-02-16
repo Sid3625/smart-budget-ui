@@ -1,5 +1,5 @@
 import api from './axios';
-import { Budget, CreateBudgetDto } from '@/types/budget.types';
+import { Budget, CreateBudgetDto, Category, CreateCategoryDto } from '@/types/budget.types';
 
 export const budgetApi = {
     getAll: async (): Promise<Budget[]> => {
@@ -12,7 +12,12 @@ export const budgetApi = {
         return data;
     },
 
-    getMonthlySummary: async () => { // Optional aggregation
+    createCategory: async (payload: CreateCategoryDto): Promise<Category> => {
+        const { data } = await api.post<Category>('/categories', payload);
+        return data;
+    },
+
+    getMonthlySummary: async () => {
         const { data } = await api.get('/budgets/summary');
         return data;
     }

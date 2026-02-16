@@ -5,6 +5,12 @@ export interface Category {
     budgetId: string;
 }
 
+export interface CreateCategoryDto {
+    name: string;
+    limitAmount: number;
+    budgetId: string;
+}
+
 export interface Budget {
     id: string;
     name: string;

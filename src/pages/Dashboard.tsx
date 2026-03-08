@@ -1,17 +1,19 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useBudgets } from '@/hooks/useBudgets.ts';
 import { useTransactions } from '@/hooks/useTransactions.ts';
 import { IncomeExpenseChart } from '@/components/charts/IncomeExpenseChart';
-import { formatCurrency } from '@/utils/format'; // Note: I will need to create this util
-import { Loader2, TrendingUp, TrendingDown, DollarSign, PiggyBank } from 'lucide-react';
+import { CategorySpendingChart } from '@/components/charts/CategorySpendingChart';
+import { AIReportModal } from '@/components/AIReportModal';
+import { formatCurrency } from '@/utils/format';
+import { Loader2, TrendingUp, TrendingDown, IndianRupee, PiggyBank, Download } from 'lucide-react';
 import { clsx } from 'clsx';
 import { Transaction } from '@/types/transaction.types';
 
 const StatCard = ({ title, value, icon: Icon, trend, color }: any) => (
-    <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between">
+    <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 flex items-center justify-between transition-colors">
         <div>
-            <p className="text-sm font-medium text-gray-500">{title}</p>
-            <h3 className="text-2xl font-bold mt-1 text-gray-900">{value}</h3>
+            <p className="text-sm font-medium text-gray-500 dark:text-gray-400">{title}</p>
+            <h3 className="text-2xl font-bold mt-1 text-gray-900 dark:text-white">{value}</h3>
             {trend && (
                 <p className={clsx("text-sm mt-1", trend > 0 ? "text-green-600" : "text-red-600")}>
                     {trend > 0 ? "+" : ""}{trend}% from last month
@@ -76,6 +78,27 @@ export const Dashboard = () => {
         return Object.entries(dataMap).map(([name, val]) => ({ name, ...val })).slice(-7);
     }, [transactions]);
 
+    const pieChartData = useMemo(() => {
+        const dataMap: Record<string, number> = {};
+        transactions.filter(t => t.type === 'expense').forEach(t => {
+            const catName = t.category?.name || 'Uncategorized';
+            if (!dataMap[catName]) dataMap[catName] = 0;
+            dataMap[catName] += Number(t.amount);
+        });
+
+        const colors = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#14b8a6'];
+        return Object.entries(dataMap).map(([name, value], index) => ({
+            name,
+            value,
+            color: colors[index % colors.length]
+        })).sort((a, b) => b.value - a.value);
+    }, [transactions]);
+
+    const [isReportOpen, setIsReportOpen] = useState(false);
+
+    const handleGenerateReport = () => {
+        setIsReportOpen(true);
+    };
 
     if (budgetsLoading || transactionsLoading) {
         return (
@@ -87,11 +110,22 @@ export const Dashboard = () => {
 
     return (
         <div className="space-y-6">
+            <div className="flex justify-between items-center bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 transition-colors">
+                <h2 className="text-xl font-bold text-gray-900 dark:text-white">Dashboard Overview</h2>
+                <button
+                    onClick={handleGenerateReport}
+                    className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors font-medium text-sm shadow-sm"
+                >
+                    <Download className="w-4 h-4" />
+                    AI Report
+                </button>
+            </div>
+
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <StatCard
                     title="Total Balance"
                     value={formatCurrency(summary.balance)}
-                    icon={DollarSign}
+                    icon={IndianRupee}
                     color="bg-blue-500"
                 />
                 <StatCard
@@ -116,28 +150,42 @@ export const Dashboard = () => {
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Chart Section */}
-                <div className="lg:col-span-2 bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-                    <h3 className="text-lg font-bold text-gray-900 mb-4">Income vs Expenses</h3>
-                    <IncomeExpenseChart data={chartData} />
+                <div className="lg:col-span-2 bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 flex flex-col gap-6 transition-colors">
+                    <div>
+                        <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">Income vs Expenses</h3>
+                        <IncomeExpenseChart data={chartData} />
+                    </div>
                 </div>
 
+                {/* Spending by Category Pie Chart */}
+                <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 transition-colors">
+                    <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">Category Breakdown</h3>
+                    {pieChartData.length > 0 ? (
+                        <CategorySpendingChart data={pieChartData} />
+                    ) : (
+                        <p className="text-gray-500 text-sm text-center py-4">No expenses recorded yet.</p>
+                    )}
+                </div>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Budgets Progress */}
-                <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-                    <h3 className="text-lg font-bold text-gray-900 mb-4">Budget Utilization</h3>
+                <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 transition-colors">
+                    <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">Budget Utilization</h3>
                     <div className="space-y-4">
                         {summary.budgetUsage.map((budget) => (
                             <div key={budget.id}>
                                 <div className="flex justify-between text-sm mb-1">
-                                    <span className="font-medium text-gray-700">{budget.name}</span>
-                                    <span className="text-gray-500">
+                                    <span className="font-medium text-gray-700 dark:text-gray-300">{budget.name}</span>
+                                    <span className="text-gray-500 dark:text-gray-400">
                                         {formatCurrency(budget.spent)} / {formatCurrency(Number(budget.totalAllocation))}
                                     </span>
                                 </div>
-                                <div className="w-full bg-gray-200 rounded-full h-2.5">
+                                <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
                                     <div
                                         className={clsx(
                                             "h-2.5 rounded-full",
-                                            budget.percentage > 90 ? "bg-red-500" : "bg-blue-500"
+                                            budget.percentage > 90 ? "bg-red-500" : budget.percentage > 75 ? "bg-yellow-500" : "bg-blue-500"
                                         )}
                                         style={{ width: `${budget.percentage}%` }}
                                     ></div>
@@ -150,6 +198,58 @@ export const Dashboard = () => {
                     </div>
                 </div>
             </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Recent Transactions */}
+                <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 transition-colors">
+                    <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">Recent Transactions</h3>
+                    <div className="space-y-4">
+                        {transactions.slice(0, 5).map((t) => (
+                            <div key={t.id} className="flex justify-between items-center p-3 hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-lg transition-colors border border-gray-50 dark:border-gray-700/50">
+                                <div>
+                                    <p className="font-medium text-gray-900 dark:text-gray-100">{t.description || t.category?.name}</p>
+                                    <p className="text-sm text-gray-500 dark:text-gray-400">{new Date(t.date).toLocaleDateString()}</p>
+                                </div>
+                                <span className={clsx(
+                                    "font-semibold",
+                                    t.type === 'income' ? "text-green-600 dark:text-green-400" : "text-gray-900 dark:text-white"
+                                )}>
+                                    {t.type === 'income' ? '+' : '-'}{formatCurrency(Number(t.amount))}
+                                </span>
+                            </div>
+                        ))}
+                        {transactions.length === 0 && (
+                            <p className="text-gray-500 text-sm text-center py-4">No transactions yet.</p>
+                        )}
+                    </div>
+                </div>
+
+                {/* AI / Financial Insight */}
+                <div className="bg-gradient-to-br from-indigo-500 to-purple-600 p-6 rounded-xl shadow-sm border border-indigo-400 text-white flex flex-col justify-center">
+                    <h3 className="text-xl font-bold mb-2 flex items-center gap-2">
+                        <span className="text-2xl">💡</span> Smart Insight
+                    </h3>
+                    <p className="text-indigo-100 mb-4 leading-relaxed">
+                        {summary.balance > 0
+                            ? `Great job! You have saved ${formatCurrency(summary.balance)} so far. Keep your expenses under control to hit your long-term financial goals.`
+                            : summary.balance < 0
+                                ? `Careful! Your expenses are currently exceeding your income by ${formatCurrency(Math.abs(summary.balance))}. Consider reviewing your budget utilization to cut back on non-essentials.`
+                                : `You're breaking even. Let's see if you can increase your income or reduce expenses this month to start growing your savings!`}
+                    </p>
+                    {summary.budgetUsage.some((b: any) => b.percentage > 90) && (
+                        <div className="bg-white/20 p-3 rounded-lg border border-white/30 backdrop-blur-sm">
+                            <p className="text-sm font-medium">⚠️ Warning: Some of your budgets are over 90% utilized.</p>
+                        </div>
+                    )}
+                </div>
+            </div>
+
+            <AIReportModal
+                isOpen={isReportOpen}
+                onClose={() => setIsReportOpen(false)}
+                summary={summary}
+                pieChartData={pieChartData}
+            />
         </div>
     );
 };

@@ -19,7 +19,7 @@ export const Budgets = () => {
     return (
         <div className="space-y-6">
             <div className="flex justify-between items-center">
-                <h1 className="text-2xl font-bold text-gray-900">Budgets</h1>
+                <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Budgets</h1>
                 <Button onClick={() => setIsModalOpen(true)} className="flex items-center gap-2">
                     <Plus className="w-4 h-4" />
                     New Budget
@@ -31,16 +31,16 @@ export const Budgets = () => {
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {budgets?.map((budget) => (
-                        <div key={budget.id} className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-                            <h3 className="text-lg font-semibold text-gray-900">{budget.name}</h3>
-                            <p className="text-gray-500 text-sm mt-1">
+                        <div key={budget.id} className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 transition-colors">
+                            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{budget.name}</h3>
+                            <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">
                                 {new Date(budget.year, budget.month - 1).toLocaleString('default', { month: 'long', year: 'numeric' })}
                             </p>
                             <div className="mt-4">
-                                <span className="text-2xl font-bold text-gray-900">
+                                <span className="text-2xl font-bold text-gray-900 dark:text-white">
                                     {formatCurrency(Number(budget.totalAllocation))}
                                 </span>
-                                <span className="text-gray-500 text-sm ml-2">Total Allocation</span>
+                                <span className="text-gray-500 dark:text-gray-400 text-sm ml-2">Total Allocation</span>
                             </div>
                         </div>
                     ))}

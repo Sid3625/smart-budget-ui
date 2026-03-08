@@ -5,6 +5,8 @@ import { Dashboard } from '@/pages/Dashboard';
 import { Transactions } from '@/pages/Transactions';
 import { Profile } from '@/pages/Profile';
 import { Budgets } from '@/pages/Budgets';
+import { Goals } from '@/pages/Goals';
+import { Bills } from '@/pages/Bills';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { ProtectedRoute } from '@/components/ProtectedRoute';
 
@@ -38,6 +40,14 @@ export const router = createBrowserRouter([
                     {
                         path: '/budgets',
                         element: <Budgets />,
+                    },
+                    {
+                        path: '/goals',
+                        element: <Goals />,
+                    },
+                    {
+                        path: '/bills',
+                        element: <Bills />,
                     },
                     {
                         path: '/profile',

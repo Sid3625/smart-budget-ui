@@ -1,6 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
 import { clsx } from 'clsx';
-import { LayoutDashboard, Receipt, User, LogOut, PiggyBank } from 'lucide-react';
+import { LayoutDashboard, Receipt, User, LogOut, PiggyBank, Target, CalendarClock } from 'lucide-react';
 import { useAuthStore } from '@/store/auth.store';
 
 export const Sidebar = () => {
@@ -11,6 +11,8 @@ export const Sidebar = () => {
         { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
         { name: 'Budgets', href: '/budgets', icon: PiggyBank },
         { name: 'Transactions', href: '/transactions', icon: Receipt },
+        { name: 'Savings Goals', href: '/goals', icon: Target },
+        { name: 'Recurring Bills', href: '/bills', icon: CalendarClock },
         { name: 'Profile', href: '/profile', icon: User },
     ];
 
@@ -45,10 +47,17 @@ export const Sidebar = () => {
                 })}
             </nav>
 
-            <div className="p-4 border-t border-gray-100">
+            <div className="p-4 border-t border-gray-100 dark:border-gray-700 flex flex-col gap-2">
+                <button
+                    onClick={() => document.documentElement.classList.toggle('dark')}
+                    className="flex items-center gap-3 px-4 py-3 w-full text-left text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors font-medium"
+                >
+                    <span className="w-5 h-5 flex items-center justify-center text-xl leading-none">🌙</span>
+                    Toggle Theme
+                </button>
                 <button
                     onClick={logout}
-                    className="flex items-center gap-3 px-4 py-3 w-full text-left text-red-600 hover:bg-red-50 rounded-lg transition-colors font-medium"
+                    className="flex items-center gap-3 px-4 py-3 w-full text-left text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors font-medium"
                 >
                     <LogOut className="w-5 h-5" />
                     Logout

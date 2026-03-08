@@ -23,21 +23,21 @@ export const Modal = ({ isOpen, onClose, title, children, footer }: ModalProps) 
             <div className="flex min-h-screen items-center justify-center p-4 text-center sm:p-0">
                 <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" onClick={onClose} />
 
-                <div className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
-                    <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
+                <div className="relative transform overflow-hidden rounded-lg bg-white dark:bg-gray-800 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
+                    <div className="bg-white dark:bg-gray-800 px-4 pb-4 pt-5 sm:p-6 sm:pb-4 transition-colors">
                         <div className="flex items-center justify-between mb-4">
-                            <h3 className="text-lg font-semibold leading-6 text-gray-900">{title}</h3>
+                            <h3 className="text-lg font-semibold leading-6 text-gray-900 dark:text-white">{title}</h3>
                             <button
                                 onClick={onClose}
-                                className="rounded-full p-1 hover:bg-gray-100 transition-colors"
+                                className="rounded-full p-1 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                             >
-                                <X className="h-5 w-5 text-gray-500" />
+                                <X className="h-5 w-5 text-gray-500 dark:text-gray-400" />
                             </button>
                         </div>
                         <div className="mt-2">{children}</div>
                     </div>
                     {footer && (
-                        <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+                        <div className="bg-gray-50 dark:bg-gray-900/50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6 transition-colors">
                             {footer}
                         </div>
                     )}

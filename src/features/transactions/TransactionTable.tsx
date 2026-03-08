@@ -22,41 +22,41 @@ export const TransactionTable = ({ transactions, onEdit, onDelete, isLoading }: 
 
     if (transactions.length === 0) {
         return (
-            <div className="text-center py-12 bg-white rounded-lg shadow-sm border border-gray-200">
-                <p className="text-gray-500">No transactions found.</p>
+            <div className="text-center py-12 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 transition-colors">
+                <p className="text-gray-500 dark:text-gray-400">No transactions found.</p>
             </div>
         );
     }
 
     return (
-        <div className="overflow-x-auto rounded-lg shadow-sm border border-gray-200">
-            <table className="min-w-full divide-y divide-gray-200 bg-white">
-                <thead className="bg-gray-50">
+        <div className="overflow-x-auto rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 transition-colors">
+            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-gray-800">
+                <thead className="bg-gray-50 dark:bg-gray-900">
                     <tr>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
-                        <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Date</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Description</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Category</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Amount</th>
+                        <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
                     </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-200">
+                <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
                     {transactions.map((transaction) => (
-                        <tr key={transaction.id} className="hover:bg-gray-50 transition-colors">
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <tr key={transaction.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                                 {formatDate(transaction.date)}
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
                                 {transaction.description}
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-300">
                                     {transaction.category?.name}
                                 </span>
                             </td>
                             <td className={clsx(
                                 "px-6 py-4 whitespace-nowrap text-sm font-bold",
-                                transaction.type === 'income' ? 'text-green-600' : 'text-red-600'
+                                transaction.type === 'income' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'
                             )}>
                                 {transaction.type === 'income' ? '+' : '-'}{formatCurrency(transaction.amount)}
                             </td>
@@ -66,7 +66,7 @@ export const TransactionTable = ({ transactions, onEdit, onDelete, isLoading }: 
                                         variant="ghost"
                                         size="sm"
                                         onClick={() => onEdit(transaction)}
-                                        className="p-1 hover:text-blue-600"
+                                        className="p-1 hover:text-blue-600 dark:hover:text-blue-400"
                                     >
                                         <Edit2 className="h-4 w-4" />
                                     </Button>
@@ -74,7 +74,7 @@ export const TransactionTable = ({ transactions, onEdit, onDelete, isLoading }: 
                                         variant="ghost"
                                         size="sm"
                                         onClick={() => onDelete(transaction.id)}
-                                        className="p-1 hover:text-red-600"
+                                        className="p-1 hover:text-red-600 dark:hover:text-red-400"
                                     >
                                         <Trash2 className="h-4 w-4" />
                                     </Button>

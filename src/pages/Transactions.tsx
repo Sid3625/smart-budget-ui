@@ -68,7 +68,7 @@ export const Transactions = () => {
     return (
         <div className="space-y-6">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                <h1 className="text-2xl font-bold text-gray-900">Transactions</h1>
+                <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Transactions</h1>
 
                 <Button onClick={openCreateModal} className="flex items-center gap-2">
                     <Plus className="w-4 h-4" />
@@ -76,9 +76,9 @@ export const Transactions = () => {
                 </Button>
             </div>
 
-            <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200 flex flex-wrap gap-4">
+            <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 flex flex-wrap gap-4 transition-colors">
                 <select
-                    className="block w-full sm:w-auto rounded-md shadow-sm border-gray-300 focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 bg-white border h-10 min-w-[200px]"
+                    className="block w-full sm:w-auto rounded-md shadow-sm border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border h-10 min-w-[200px]"
                     value={filters.category}
                     onChange={(e) => setFilters(prev => ({ ...prev, category: e.target.value, page: 1 }))}
                 >
@@ -89,7 +89,7 @@ export const Transactions = () => {
                 </select>
 
                 <select
-                    className="block w-full sm:w-auto rounded-md shadow-sm border-gray-300 focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 bg-white border h-10"
+                    className="block w-full sm:w-auto rounded-md shadow-sm border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border h-10"
                     value={filters.limit}
                     onChange={(e) => setFilters(prev => ({ ...prev, limit: Number(e.target.value), page: 1 }))}
                 >
@@ -116,7 +116,7 @@ export const Transactions = () => {
                     >
                         Previous
                     </Button>
-                    <span className="text-sm text-gray-600">
+                    <span className="text-sm text-gray-600 dark:text-gray-400">
                         Page {transactionsData.currentPage} of {transactionsData.totalPages}
                     </span>
                     <Button

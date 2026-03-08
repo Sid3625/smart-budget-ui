@@ -7,7 +7,10 @@ export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
 }
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(
-    ({ className, error, label, ...props }, ref) => {
+    ({ className, error, label, value, ...props }, ref) => {
+        // Handle NaN for numeric inputs to avoid React warnings when empty
+        const safeValue = typeof value === 'number' && Number.isNaN(value) ? '' : value;
+
         return (
             <div className="w-full">
                 {label && (
@@ -18,6 +21,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
 
                 <input
                     ref={ref}
+                    value={safeValue}
                     className={clsx(
                         "w-full rounded-lg border bg-white px-3 py-2 text-sm",
                         "border-gray-300 placeholder:text-gray-400",
